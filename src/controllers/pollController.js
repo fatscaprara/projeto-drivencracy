@@ -5,12 +5,11 @@ export async function postPoll(req, res) {
 
   try {
     await db.collection("poll").insertOne(poll);
+    res.status(201).send(poll);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
-
-  res.status(201).send(poll);
 }
 
 export async function getPoll(req, res) {
