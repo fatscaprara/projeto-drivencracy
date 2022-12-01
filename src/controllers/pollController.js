@@ -21,3 +21,19 @@ export async function getPoll(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function getChoiceById(req, res) {
+  const id = req.id;
+
+  try {
+    const choices = await db
+      .collection("choice")
+      .find({ pollId: id })
+      .toArray();
+
+    res.send(choices);
+  } catch (err) {
+    console.log(err);
+    res.send(500);
+  }
+}
