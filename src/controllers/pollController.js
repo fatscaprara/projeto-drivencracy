@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import db from "../database/db.js";
 
 export async function postPoll(req, res) {
@@ -35,5 +36,41 @@ export async function getChoiceById(req, res) {
   } catch (err) {
     console.log(err);
     res.send(500);
+  }
+}
+
+export async function getPollResult(req, res) {
+  const { id, findPoll } = req;
+
+  try {
+    const [{ _id, votes }] = await db
+      .collection("votes")
+      .aggregate([
+        {
+          $match: { pollId: ObjectId(id) },
+        },
+        {
+          $group: { _id: "$choiceId", votes: { $sum: +1 } },
+        },
+        {
+          $sort: { votes: -1 },
+        },
+        {
+          $limit: 1,
+        },
+      ])
+      .toArray();
+
+    const result = await db
+      .collection("choice")
+      .findOne({ _id: ObjectId(_id) });
+
+    res.send({
+      ...findPoll,
+      result: { title: result.title, votes },
+    });
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
   }
 }

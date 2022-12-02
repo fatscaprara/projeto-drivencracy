@@ -12,6 +12,7 @@ export default async function idValidate(req, res, next) {
     }
 
     req.id = id;
+    req.findPoll = findPoll;
     next();
   } catch (err) {
     console.log(err);
